@@ -104,7 +104,7 @@ body {
   filter: grayscale(60%);
 }
 
-.product-card.no-disponible .product-card__stock {
+.product-card.unavailable .product-card__stock {
   color: #c0392b;
   font-weight: 600;
 }

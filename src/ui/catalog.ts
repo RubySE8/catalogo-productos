@@ -7,7 +7,7 @@ export function renderCatalog(products: Product[]): HTMLElement {
 
     if (products.length === 0) {
         const message = document.createElement("p");
-        message.className = "catalog_empty";
+        message.className = "catalog__empty";
         message.textContent = "No se encontraron productos"; 
         container.appendChild(message);
         return container;

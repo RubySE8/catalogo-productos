@@ -1,3 +1,5 @@
+import type { Product } from "../types/product";
+
 import {
   validateName,
   validateEmail,
@@ -5,7 +7,7 @@ import {
   validateQuantity,
 } from "../utils/validation";
 
-export function setupFormHandler(): void  {
+export function setupFormHandler(products: Product[]): void  {
   const form = document.querySelector<HTMLFormElement>("#request-form")!;
 
   const nameInput = document.querySelector<HTMLInputElement>("#name")!;
@@ -27,10 +29,10 @@ export function setupFormHandler(): void  {
     const error = validateProduct(productSelect.value);
     showError("product", error);
 
-    validateQuantityField();
+    validateQuantityField(products);
   });
 
-  quantityInput.addEventListener("input", validateQuantityField);
+  quantityInput.addEventListener("input", () => {validateQuantityField(products);});
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -38,8 +40,9 @@ export function setupFormHandler(): void  {
     const nameError = validateName(nameInput.value);
     const emailError = validateEmail(emailInput.value);
     const productError = validateProduct(productSelect.value);
-    const quantityError = validateQuantityField();
+    const quantityError = validateQuantityField(products); 
 
+    
     showError("name", nameError);
     showError("email", emailError);
     showError("product", productError);
@@ -57,23 +60,22 @@ export function setupFormHandler(): void  {
   });
 }
 
-function validateQuantityField(): string {
+function validateQuantityField(products: Product[]): string {
   const productSelect = document.querySelector<HTMLSelectElement>("#product")!;
   const quantityInput = document.querySelector<HTMLInputElement>("#quantity")!;
 
-  const productId = productSelect.value;
+  const productId = Number(productSelect.value);
   const quantity = quantityInput.value;
 
-  if (productId === "") {
+
+  if (isNaN(productId) || productId === 0) {
     showError("quantity", "");
     return "";
   }
 
-  const option = productSelect.selectedOptions[0];
-  const stockText = option.textContent || "";
 
-  const match = stockText.match(/\(stock: (\d+)\)/);
-  const stock = match ? Number(match[1]) : 0;
+  const product = products.find((p) => p.id === productId);
+  const stock = product ? product.stock : 0;
 
   const error = validateQuantity(quantity, stock);
   showError("quantity", error);

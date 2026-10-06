@@ -1,6 +1,6 @@
 import type { Product } from "../types/product";
 
-export type SortOption = "default" | "price-asc" | "price-desc" | "name-asc";
+export type SortOption = "default" | "price-asc" | "price-desc" | "name-asc"| "stock-desc"; 
 
 export function sortProducts(
   products: Product[],
@@ -18,6 +18,9 @@ export function sortProducts(
     case "name-asc":
       sorted.sort((a, b) => a.title.localeCompare(b.title));
       break;
+    case "stock-desc":
+    sorted.sort((a, b) => b.stock - a.stock);
+    break;
   }
 
   return sorted;

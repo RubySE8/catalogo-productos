@@ -37,11 +37,13 @@ export function renderForm(products: Product[]): HTMLElement {
       <select id="product" name="product" class="form-field__input">
         <option value="">Selecciona un producto</option>
         ${products
-          .map(
-            (product) =>
-              `<option value="${product.id}">${product.title} (stock: ${product.stock})</option>`
-          )
-          .join("")}
+       .map(
+        (product) =>
+        `<option value="${product.id}" ${product.stock === 0 ?
+        "disabled" : ""}>${product.title} ${product.stock === 0 ? 
+        "(sin stock)" : `(stock: ${product.stock})`}</option>`
+        )
+         .join("")}
       </select>
       <span class="form-field__error" data-error-for="product"></span>
     </div>

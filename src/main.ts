@@ -8,6 +8,7 @@ import { sortProducts, moveOutOfStockToEnd } from "./utils/sort";
 import type { SortOption } from "./utils/sort";
 import type { Product } from "./types/product";
 import { setupFormHandler } from "./ui/formHandler";
+import { debounce } from "./utils/debounce";
 
 interface AppState {
   allProducts: Product[];
@@ -34,11 +35,11 @@ async function init(): Promise<void> {
     state.allProducts = await fetchProducts();
 
     renderLayout();
-    renderFormInContainer(); 
+    renderFormInContainer();
     attachListeners();
     render();
   } catch (error) {
-    app.innerHTML = `<p class="error">Error al cargar los productos. Intenta de nuevo.</p>`;
+    app.innerHTML = `<p class="error">Error al cargar los productos: ${(error as Error).message}</p>`;
     console.error(error);
   }
 }
@@ -50,7 +51,7 @@ function renderFormInContainer(): void {
   container.innerHTML = "";
   container.appendChild(form);
 
-  setupFormHandler();
+  setupFormHandler(state.allProducts);
 }
 
 function renderLayout(): void {
@@ -69,16 +70,17 @@ function renderLayout(): void {
         <select id="category" class="category-select">
           <option value="all">Todas las categorías</option>
           ${categories
-            .map(
-              (cat) => `<option value="${cat}">${formatCategory(cat)}</option>`
-            )
-            .join("")}
+      .map(
+        (cat) => `<option value="${cat}">${formatCategory(cat)}</option>`
+      )
+      .join("")}
         </select>
         <select id="sort" class="sort-select">
           <option value="default">Ordenar por...</option>
           <option value="price-asc">Precio: menor a mayor</option>
           <option value="price-desc">Precio: mayor a menor</option>
           <option value="name-asc">Nombre: A a Z</option>
+          <option value="stock-desc">Stock: mayor a menor</option>
         </select>
       </div>
     </header>
@@ -93,9 +95,13 @@ function attachListeners(): void {
   const categorySelect = document.querySelector<HTMLSelectElement>("#category")!;
   const sortSelect = document.querySelector<HTMLSelectElement>("#sort")!;
 
-  searchInput.addEventListener("input", (event) => {
-    state.search = (event.target as HTMLInputElement).value;
+  const handleSearch = debounce((value: string) => {
+    state.search = value;
     render();
+  }, 300);
+
+  searchInput.addEventListener("input", (event) => {
+    handleSearch((event.target as HTMLInputElement).value);
   });
 
   categorySelect.addEventListener("change", (event) => {

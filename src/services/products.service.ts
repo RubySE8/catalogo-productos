@@ -9,7 +9,7 @@ export async function fetchProducts(): Promise<Product[]> {
 
     if (!response.ok) {
 
-        throw new Error('Error HTTP: ${response.status}');
+        throw new Error(`Error HTTP: ${response.status}`);
     }
 
     const data: ProductsResponse = await response.json();
