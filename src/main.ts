@@ -1,4 +1,4 @@
-import "./style.css";
+import "./styles/index.css";
 import { fetchProducts } from "./services/products.service";
 import { renderCatalog } from "./ui/catalog";
 import { renderForm } from "./ui/form";
@@ -9,6 +9,7 @@ import type { SortOption } from "./utils/sort";
 import type { Product } from "./types/product";
 import { setupFormHandler } from "./ui/formHandler";
 import { debounce } from "./utils/debounce";
+import { setupCatalogHandler } from "./ui/catalogHandler";
 
 interface AppState {
   allProducts: Product[];
@@ -37,6 +38,7 @@ async function init(): Promise<void> {
     renderLayout();
     renderFormInContainer();
     attachListeners();
+    setupCatalogHandler(() => render());
     render();
   } catch (error) {
     app.innerHTML = `<p class="error">Error al cargar los productos: ${(error as Error).message}</p>`;
